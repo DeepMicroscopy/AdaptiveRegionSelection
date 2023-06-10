@@ -110,15 +110,15 @@ def adaptive_region_sampling(slide, priority_map, n_query, region_size, save_pat
     print(f"adaptive region selection ({slide.file.name}): {n_query} regions of size {region_size}"
           f" at level {slide.level}...")
 
+    # region size in the range [(0.5*region_size)**2, (1.5*region_size)**2] to avoid extreme selections
+    l_max = int(region_size * 3 / 2)
+    l_min = int(region_size / 2)
+
     priority_map = medfilt2d(priority_map)  # avoid outliers when selecting pixels with the highest priorities
 
     for s in slide.annotated_boxes:
         x1, y1, x2, y2 = s
         priority_map[y1:y2, x1:x2] = 0
-
-    # region size in the range [(0.5*region_size)**2, (1.5*region_size)**2] to avoid extreme selections
-    l_max = int(region_size * 3 / 2)
-    l_min = int(region_size / 2)
 
     fig, axes = plt.subplots(1, n_query, figsize=(n_query * 5, 10))
     selected = []
@@ -132,11 +132,11 @@ def adaptive_region_sampling(slide, priority_map, n_query, region_size, save_pat
         left = 98  # 98 percentile of values in the priority map
         right = 100
 
-        res = np.zeros_like(priority_map)
         for _ in range(10):  # 10 trails to find the adapted region, otherwise select a region centered at (y,x)
             p = (left + right) / 2
             res = priority_map >= np.percentile(priority_map, p)
             res = np.uint8(res * 255)
+            ax.imshow(res, cmap="gray")
 
             # connected component detection and sort them from the largest to the smallest
             contours, _ = cv2.findContours(res, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
@@ -185,7 +185,6 @@ def adaptive_region_sampling(slide, priority_map, n_query, region_size, save_pat
         print(f"final selection-----------------------------------------x = {x}, y = {y}, w = {w}, h = {h}")
         priority_map[y:y + h, x:x + w] = 0
         selected.append([x, y, x + w, y + h])  # at select_level
-        ax.imshow(res, cmap="gray")
         show_selected_box_helper(slide.annotated_boxes + selected[:-1], ax, "green")  # already selected
         show_selected_box_helper(selected[-1:], ax, "red")  # newly selected
 
@@ -206,7 +205,6 @@ def select_regions(sampling_strategy, dataset_path, slide_name_list, predict_lev
          "selected_regions": [[50, 40, 100, 90], [1000, 140, 1200, 190]],     <-- [top left x, top left y, bottom right x, bottom right right]
          "selected_clicks": [int(c_p), int(c_i), int(c_b), int(c_c), int(anno_pixels)],
          "set_name": "train"})
-
     """
     print(f"selecting on {slide_name_list}...")
 
