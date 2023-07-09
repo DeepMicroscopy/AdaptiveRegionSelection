@@ -4,7 +4,7 @@ from FROC import FROC_analysis
 from inference import predict
 from result_analysis import calculate_IoU, calculate_AUC
 from train import train
-from user_define import experiment_config
+from user_define import experiment_config, Log
 from utils import *
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -70,7 +70,7 @@ if __name__ == '__main__':
     print(f"train_idx_list = {train_idx_list}")
     print(f"valid_idx_list = {valid_idx_list}")
 
-    for cycle in range(2, CYCLES+1):
+    for cycle in range(1, CYCLES+1):
         args.exp = f"cycle_{cycle}_{args.res_path.split('/')[-1]}"
         Log(f"#==============EXPERIMENT {args.exp} ======================", args.log_file)
 
@@ -109,21 +109,20 @@ if __name__ == '__main__':
             if m == 'select':
                 # prepare the annotation file by copying from last AL cycle
                 if cycle == 1:
+                    last_exp = None
                     last_AL_annotations = None
                 else:
-                    last_AL_annotations = AL_annotations.replace(f"cycle_{cycle}", f"cycle_{cycle - 1}")
+                    last_exp = args.exp.replace(f"cycle_{cycle}", f"cycle_{cycle - 1}")
                     if cycle == 2 and args.initial_sampling_strategy == "random":
-                        last_AL_annotations = last_AL_annotations.replace(args.sampling_strategy, "random")
+                        last_exp = last_exp.replace(args.sampling_strategy, "random")
+                    last_AL_annotations = os.path.join(last_exp, last_exp + '_select.json')
+
                 prepare_AL_annotations(AL_annotations, last_AL_annotations)
 
                 # predict slides for generating the selection priority maps
                 if args.sampling_strategy.__contains__("uncertainty"):
-                    last_learner_path = learner_path.replace(f"cycle_{cycle}", f"cycle_{cycle - 1}")
-                    select_hdf5 = os.path.join(args.exp, args.exp + '_inference_select.hdf5')\
-                        .replace(f"cycle_{cycle}", f"cycle_{cycle - 1}")
-                    if cycle == 2 and args.initial_sampling_strategy == "random":
-                        last_learner_path = last_learner_path.replace(args.sampling_strategy, "random")
-                        select_hdf5 = select_hdf5.replace(args.sampling_strategy, "random")
+                    last_learner_path = os.path.join(last_exp, last_exp + ".pkl")
+                    select_hdf5 = os.path.join(last_exp, last_exp + '_inference_select.hdf5')
 
                     predict(learner_path=last_learner_path, slide_list=np.array(args.train_list)[train_idx],
                             output_hdf5_filename=select_hdf5, dataset_path=args.dataset_path, slide_level=args.level,

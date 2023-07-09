@@ -243,7 +243,8 @@ class SlideContainer:
         # reveal only annotated tumor area
         anno_map = np.zeros_like(full_anno)
         for b in self.annotated_boxes:
-            x1, y1, x2, y2 = self.coordinate_convert([b], level_source=0, level_target=self.preprocessing_level)[0]
+            x1, y1, x2, y2 = \
+            self.coordinate_convert([b], level_source=self.level, level_target=self.preprocessing_level)[0]
             anno_map[y1:y2, x1:x2] = 1
         full_anno *= anno_map
 
@@ -393,7 +394,7 @@ class SlideContainer:
                 patch_y, patch_label = self.get_patch_y(xmin, ymin)
                 # resample a patch if it contains less than 1% foreground
                 if np.sum(cv2.cvtColor(patch_x, cv2.COLOR_RGB2GRAY) < self.white) >= 0.01 * self.patch_size ** 2:
-                # if np.sum(cv2.cvtColor(patch_x, cv2.COLOR_RGB2GRAY) < self.white) >= 0.1 * self.patch_size ** 2:  # increase tissue content threshold when training with normal slides
+                    # if np.sum(cv2.cvtColor(patch_x, cv2.COLOR_RGB2GRAY) < self.white) >= 0.1 * self.patch_size ** 2:  # increase tissue content threshold when training with normal slides
                     break
             return patch_x, patch_y, patch_label
 

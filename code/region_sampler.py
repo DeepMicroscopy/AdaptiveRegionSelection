@@ -101,7 +101,7 @@ class RegionSampler(object):
         X, Y, priorities = X[non_zero], Y[non_zero], I[non_zero]
 
         selected = nms(X, Y, region_size, region_size, priorities, n_query + len(already_selected))
-        selected = [[X[i], Y[i], X[i] + region_size, Y[i] + region_size] for i in selected[-n_query:]]
+        selected = [[X[i], Y[i], X[i] + region_size, Y[i] + region_size] for i in selected[len(already_selected):]]
 
         return selected
 
@@ -164,6 +164,6 @@ class RegionSampler(object):
         selected = nms(np.array(X_list), np.array(Y_list), np.array(width_list), np.array(height_list),
                        np.array(priorities_list), n_query + len(already_selected))
         selected = [[X_list[i], Y_list[i], X_list[i] + width_list[i], Y_list[i] + height_list[i]] for i in
-                    selected[-n_query:]]
+                    selected[len(already_selected):]]
 
         return selected
