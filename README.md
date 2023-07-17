@@ -1,9 +1,7 @@
 # AdaptiveRegionSelection
 
-This repository provides an Active Learning (AL) framework for selecting potentially informative annotation regions on 
-Whole Slide Images (WSIs), with the goal of achieving full annotation performance with a minimum of annotated area.
-
-For details, please see "Adaptive Region Selection for Active Learning in Whole Slide Image Semantic Segmentation".
+This repository provides source code for MICCAI2023 paper "Adaptive Region Selection for Active Learning in Whole Slide Image Semantic Segmentation" [[`arXiv`
+](https://arxiv.org/pdf/2307.07168.pdf)] [[`blogpost`](https://deepmicroscopy.org/reducing-the-annotation-effort-for-microscopy-images-miccai-2023-paper/)].
 
 ## Active Learning (AL)
 You may set "sampling_strategy" in [user_define.py](code/user_define.py):
@@ -19,8 +17,8 @@ and "CYCLES" in [experiments.py](code/experiments.py) to define the number of co
 python experiments.py
 ```
 ## Conda Environment
-We use Fastai_v1 for implementation. We observe some package conflicts while building the conda env, 
-you may install as following:
+We use Fastai_v1 for implementation. We observed some package conflicts while building the conda env, 
+you may install as the following:
 ```commandline
 conda create -n fastai_v1_38 python=3.8
 source activate fastai_v1_38
