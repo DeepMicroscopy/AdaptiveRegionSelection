@@ -1,6 +1,6 @@
 # AdaptiveRegionSelection
 
-This repository provides source code for MICCAI2023 paper "Adaptive Region Selection for Active Learning in Whole Slide Image Semantic Segmentation" [[`arXiv`
+This repository provides source code for the MICCAI2023 paper "Adaptive Region Selection for Active Learning in Whole Slide Image Semantic Segmentation" [[`arXiv`
 ](https://arxiv.org/pdf/2307.07168.pdf)] [[`blogpost`](https://deepmicroscopy.org/reducing-the-annotation-effort-for-microscopy-images-miccai-2023-paper/)].
 
 ## Active Learning (AL)
